@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import utils.SqlRuDateTimeParser;
 
 public class SqlRuParse {
     public static void main(String[] args) throws Exception {
@@ -17,7 +18,8 @@ public class SqlRuParse {
                 Element href = td.child(0);
                 System.out.println(href.attr("href"));
                 System.out.println(href.text());
-                System.out.println(col.get(dateIndex).textNodes().get(0));
+                String dateToParse = col.get(dateIndex).textNodes().get(0).toString();
+                System.out.println(new SqlRuDateTimeParser().parse(dateToParse));
                 dateIndex += 2;
             }
         }
