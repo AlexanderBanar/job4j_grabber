@@ -12,8 +12,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ibm.icu.text.Transliterator;
+
 public class ParseHelper implements Parse {
     private SqlRuDateTimeParser timeParser = new SqlRuDateTimeParser();
+    private Document docFromOneLink;
 
     @Override
     public List<Post> list(String link) {
@@ -36,7 +39,7 @@ public class ParseHelper implements Parse {
     public Post detail(String link) {
         String[] linkSplit = link.split("/");
         int id = Integer.parseInt(linkSplit[4]);
-        String name = linkSplit[5];
+        String name = toCyrillicTrans(linkSplit[5]);
         String text = null;
         LocalDateTime created = null;
         try {
@@ -48,14 +51,19 @@ public class ParseHelper implements Parse {
         return new Post(id, name, text, link, created);
     }
 
+    private String toCyrillicTrans(String latinText) {
+        var cyrillicToLatin = "Latin-Russian/BGN";
+        Transliterator toCyrillicTrans = Transliterator.getInstance(cyrillicToLatin);
+        return toCyrillicTrans.transliterate(latinText);
+    }
+
     private String extractLink(Element linkWithText) {
         Element href = linkWithText.child(0);
         return href.attr("href");
     }
 
     private LocalDateTime getCreated(String link) throws IOException {
-        Document aLinkDoc = Jsoup.connect(link).get();
-        Elements targetSearchZone = aLinkDoc.select(".msgTable");
+        Elements targetSearchZone = this.docFromOneLink.select(".msgTable");
         String dateMessedWithText = targetSearchZone.get(0)
                 .child(0)
                 .child(2)
@@ -75,9 +83,9 @@ public class ParseHelper implements Parse {
     }
 
     private String getText(String link) throws IOException {
-        Document doc2 = Jsoup.connect(link).get();
-        Elements row2 = doc2.select(".msgTable");
-        return row2.get(0)
+        this.docFromOneLink = Jsoup.connect(link).get();
+        Elements row = this.docFromOneLink.select(".msgTable");
+        return row.get(0)
                 .child(0)
                 .child(1)
                 .child(1)
