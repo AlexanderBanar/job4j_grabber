@@ -1,6 +1,5 @@
 package html;
 
-import java.io.InputStream;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,7 +25,8 @@ public class PsqlStore implements Store, AutoCloseable {
     public void save(Post post) {
         try (PreparedStatement statement =
                 this.cnn.prepareStatement(
-                        "insert into post(id, name, text, link, created) values (?, ?, ?, ?, ?)")) {
+                        "insert into post(id, name, text, link, created) values (?, ?, ?, ?, ?)"
+                                + "on conflict (id) do nothing")) {
             statement.setInt(1, post.getId());
             statement.setString(2, post.getName());
             statement.setString(3, post.getText());
@@ -64,13 +64,14 @@ public class PsqlStore implements Store, AutoCloseable {
         Post resultPost = new Post(idInt, null, null, null, null);
         try (PreparedStatement statement =
                      this.cnn.prepareStatement(
-                             "select * from post where id = ?)")) {
+                             "select * from post where id = ?")) {
             statement.setInt(1, idInt);
             ResultSet rs = statement.executeQuery();
-            resultPost.setName(rs.getString("name"));
-            resultPost.setText(rs.getString("text"));
-            resultPost.setLink(rs.getString("link"));
-            resultPost.setCreated(rs.getTimestamp("created").toLocalDateTime());
+            rs.next();
+            resultPost.setName(rs.getString(2));
+            resultPost.setText(rs.getString(3));
+            resultPost.setLink(rs.getString(4));
+            resultPost.setCreated(rs.getTimestamp(5).toLocalDateTime());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -81,23 +82,6 @@ public class PsqlStore implements Store, AutoCloseable {
     public void close() throws Exception {
         if (cnn != null) {
             cnn.close();
-        }
-    }
-
-    public static void main(String[] args) throws Exception {
-        ClassLoader loader = PsqlStore.class.getClassLoader();
-        Properties cfg = new Properties();
-        try (InputStream io = loader.getResourceAsStream("app.properties")) {
-            cfg.load(io);
-        }
-        PsqlStore psqlStore = new PsqlStore(cfg);
-        psqlStore.save(new Post(
-                111111, "testingName", "testingText", "testingLink",
-                LocalDateTime.now()));
-        List<Post> postList = psqlStore.getAll();
-        for (Post p : postList) {
-            System.out.println(p.getId() + ", " + p.getName() + ", " + p.getText()
-            + ", " + p.getLink() + ", " + p.getCreated());
         }
     }
 }
