@@ -59,14 +59,12 @@ public class Grabber implements Grab {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             Store psqlStore = (Store) map.get("store");
             Parse parseHelper = (Parse) map.get("parse");
-            StringBuilder stbLink = new StringBuilder("https://www.sql.ru/forum/job-offers/");
             for (int i = 1; i < 6; i++) {
-                stbLink.append(i);
-                List<Post> postList = parseHelper.list(stbLink.toString());
+                String link = String.format("https://www.sql.ru/forum/job-offers/%d", i);
+                List<Post> postList = parseHelper.list(link);
                 for (Post currentPost : postList) {
                     psqlStore.save(currentPost);
                 }
-                stbLink.delete(36, 37);
             }
         }
     }
