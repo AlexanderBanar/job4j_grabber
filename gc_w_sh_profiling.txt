@@ -1,0 +1,25 @@
+1. class: GCwSched, used parameters: -Xms3m -Xmx3m
+
+2. the program creates long primitives 100_000 samples each iteration, that means 800_000 bytes
+considering that the max size for heap is set to 3mb the gc events must be initiated quite often
+
+3. using the tool jstat in console with parameters -gc <pid> 1s 50
+we could confirm that the gc was invoked every iteration
+
+YGC: Number of young generation garbage collection (GC) events
+282 -> 282 -> 296 -> 296 -> 296 -> 310 -> 310 -> 310 -> 324 ... (increasing)
+
+YGCT: Young generation garbage collection time
+0,233 -> 0,233 -> 0,243 -> 0,243 -> 0,243 -> 0,252 ... (increasing)
+
+FGC: Number of full GC events
+66 -> 66 -> 70 -> 70 -> 70 -> 74 -> 74 -> 74 ... (increasing)
+
+FGCT: Full garbage collection time
+0,520 -> 0,520 -> 0,550 -> 0,550 -> 0,550 -> 0,577 ... (increasing)
+
+GCT: Total garbage collection time
+0,780 -> 0,780 -> 0,822 -> 0,822 -> 0,822 -> 0,860 ... (increasing)
+
+4. in addition, we used the tool jconsole
+to witness heap space volume varying due to gc events
