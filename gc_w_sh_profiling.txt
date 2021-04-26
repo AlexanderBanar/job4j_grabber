@@ -1,6 +1,6 @@
 1. class: GCwSched, used parameters: -Xms3m -Xmx3m
 
-2. the program creates long primitives 100_000 samples each iteration, that means 800_000 bytes
+2. the program creates an object with long primitives 100_000 samples each iteration
 considering that the max size for heap is set to 3mb the gc events must be initiated quite often
 
 3. using the tool jstat in console with parameters -gc <pid> 1s 50
