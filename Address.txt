@@ -1,0 +1,3 @@
+Ivanov=Moscow;
+Petrov=Samara;
+Sidorov=Kazan;
