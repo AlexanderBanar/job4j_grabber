@@ -9,16 +9,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class SoftCacher {
-    private Map<String, String> cacheMap = new HashMap<>();
-    private SoftReference<Map<String, String>> softCacheMap = new SoftReference<>(cacheMap);
+    private Map<String, SoftReference<String>> softCacheMap = new HashMap<>();
 
     public String getValue(String key) {
-        Map<String, String> cacheMap = this.softCacheMap.get();
-        String value = "";
-        if (cacheMap != null) {
-            value = cacheMap.get(key);
+        SoftReference<String> softValue = null;
+        if (this.softCacheMap != null) {
+            softValue = this.softCacheMap.get(key);
         }
-        return (value == null) ? readFile(key) : value;
+        return (softValue == null) ? readFile(key) : softValue.get();
     }
 
     private String readFile(String key) {
@@ -29,7 +27,7 @@ public class SoftCacher {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.cacheMap.put(key, value);
+        this.softCacheMap.put(key, new SoftReference<>(value));
         return value;
     }
 
