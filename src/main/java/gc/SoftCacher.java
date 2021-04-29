@@ -16,7 +16,7 @@ public class SoftCacher {
         if (this.softCacheMap != null) {
             softValue = this.softCacheMap.get(key);
         }
-        return (softValue == null) ? readFile(key) : softValue.get();
+        return (softValue == null) ? readFile(key) : softValueGetter(softValue, key);
     }
 
     private String readFile(String key) {
@@ -28,6 +28,14 @@ public class SoftCacher {
             e.printStackTrace();
         }
         this.softCacheMap.put(key, new SoftReference<>(value));
+        return value;
+    }
+
+    private String softValueGetter(SoftReference<String> softValue, String key) {
+        String value = softValue.get();
+        if (value == null) {
+            value = readFile(key);
+        }
         return value;
     }
 
