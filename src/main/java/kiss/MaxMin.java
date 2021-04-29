@@ -2,18 +2,26 @@ package kiss;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class MaxMin {
     public <T> T max(List<T> value, Comparator<T> comparator) {
-        return sort(value, comparator).get(value.size() - 1);
+        Predicate<Integer> predicateForMax = T1 -> T1 > 0;
+        return extremumSearch(value, comparator, predicateForMax);
     }
 
     public <T> T min(List<T> value, Comparator<T> comparator) {
-        return sort(value, comparator).get(0);
+        Predicate<Integer> predicateForMin = T1 -> T1 < 0;
+        return extremumSearch(value, comparator, predicateForMin);
     }
 
-    private <T> List<T> sort(List<T> value, Comparator<T> comparator) {
-        value.sort(comparator);
-        return value;
+    private <T> T extremumSearch(List<T> value, Comparator<T> comparator, Predicate<Integer> predicate) {
+        T extremum = value.get(0);
+        for (int i = 1; i < value.size(); i++) {
+            if (predicate.test(comparator.compare(value.get(i), extremum))) {
+                extremum = value.get(i);
+            }
+        }
+        return extremum;
     }
 }
