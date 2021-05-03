@@ -4,12 +4,14 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+@Ignore
 public class CinemaTest {
     @Test
     public void buy() {
@@ -53,5 +55,33 @@ public class CinemaTest {
         cinema.add(new Session3D());
         Cinema result = cinema.getSession();
         assertThat(result, is(new Session3D()));
+    }
+
+    @Test(expected = WrongBuyParametersException.class)
+    public void notBuyTwoSameTickets() {
+        Account account = new AccountCinema();
+        Cinema cinema = new Cinema3D();
+        Calendar date = Calendar.getInstance();
+        date.set(2021, 05, 10, 23, 00);
+        cinema.buy(account, 1, 1, date);
+        cinema.buy(account, 1, 1, date);
+    }
+
+    @Test(expected = WrongBuyParametersException.class)
+    public void notBuyTicketForPastDate() {
+        Account account = new AccountCinema();
+        Cinema cinema = new Cinema3D();
+        Calendar date = Calendar.getInstance();
+        date.set(2011, 05, 10, 23, 00);
+        cinema.buy(account, 1, 1, date);
+    }
+
+    @Test(expected = WrongBuyParametersException.class)
+    public void notBuyTicketForWrongSeat() {
+        Account account = new AccountCinema();
+        Cinema cinema = new Cinema3D();
+        Calendar date = Calendar.getInstance();
+        date.set(2021, 05, 10, 23, 00);
+        cinema.buy(account, 100, 100, date);
     }
 }
