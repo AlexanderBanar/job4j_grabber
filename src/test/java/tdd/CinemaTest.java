@@ -51,13 +51,13 @@ public class CinemaTest {
 
     @Test
     public void add() {
-        Cinema cinema = new Cinema3D();
+        Cinema3D cinema = new Cinema3D();
         cinema.add(new Session3D());
-        Cinema result = cinema.getSession();
+        Session result = cinema.getSession();
         assertThat(result, is(new Session3D()));
     }
 
-    @Test(expected = WrongBuyParametersException.class)
+    @Test(expected = Exception.class)
     public void notBuyTwoSameTickets() {
         Account account = new AccountCinema();
         Cinema cinema = new Cinema3D();
@@ -67,7 +67,7 @@ public class CinemaTest {
         cinema.buy(account, 1, 1, date);
     }
 
-    @Test(expected = WrongBuyParametersException.class)
+    @Test(expected = Exception.class)
     public void notBuyTicketForPastDate() {
         Account account = new AccountCinema();
         Cinema cinema = new Cinema3D();
@@ -76,7 +76,7 @@ public class CinemaTest {
         cinema.buy(account, 1, 1, date);
     }
 
-    @Test(expected = WrongBuyParametersException.class)
+    @Test(expected = Exception.class)
     public void notBuyTicketForWrongSeat() {
         Account account = new AccountCinema();
         Cinema cinema = new Cinema3D();

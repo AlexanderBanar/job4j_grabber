@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 
 @Ignore
 public class GeneratorTest {
-    @Test(expected = MissingKeyException.class)
+    @Test(expected = Exception.class)
     public void notProduceWithMissingKeys() {
         String template = "I am ${name}, Who are ${subject}?";
         Map<String, String> args = new HashMap<>();
@@ -20,7 +20,7 @@ public class GeneratorTest {
         generator.produce(template, args);
     }
 
-    @Test(expected = ExtraKeyException.class)
+    @Test(expected = Exception.class)
     public void notProduceWithExtraKeys() {
         String template = "I am ${name}, Who are ${subject}?";
         Map<String, String> args = new HashMap<>();
